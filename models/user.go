@@ -1,13 +1,14 @@
 package models
 
 type User struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Phone    string `json:"phone"`
-	Email    string `json:"email"`
-	Password string `json:"password,omitempty"`
-	Address  string `json:"address"`
-	UserType int    `json:"usertype"`
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	Phone      string `json:"phone"`
+	Email      string `json:"email"`
+	Password   string `json:"password,omitempty"`
+	Address    string `json:"address"`
+	UserType   int    `json:"usertype"`
+	IsVerified int    `json:"isVerified"`
 }
 
 type UsersResponse struct {

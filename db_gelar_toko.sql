@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 09, 2022 at 03:07 PM
+-- Generation Time: Apr 09, 2022 at 03:15 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.2
 
@@ -198,25 +198,26 @@ CREATE TABLE `users` (
   `Email` varchar(255) DEFAULT NULL,
   `Password` varchar(255) NOT NULL,
   `Address` varchar(20) DEFAULT NULL,
-  `User_Type` int(11) NOT NULL DEFAULT 1
+  `User_Type` int(11) NOT NULL DEFAULT 1,
+  `IsVerified` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`Id`, `Name`, `Phone`, `Email`, `Password`, `Address`, `User_Type`) VALUES
-(1, 'Wanda P', '081232874632', 'wandap@gmail.com', 'wanda123', 'Jakarta Timur', 2),
-(2, 'Andi Pranata', '081234278282', 'andipranata@gmail.com', '', 'Kab. Bogor', 2),
-(3, 'Dimas Wahyudi', '089512351818', 'dimaswhyd@gmail.com', '', 'Bekasi Timur', 2),
-(4, 'Alan Kusuma', '082273482682', 'alankusuma@gmail.com', '', 'Malang', 2),
-(5, 'Hadi Wijaya', '087324964329', 'wijayahadi@gmail.com', '', 'Blitar', 2),
-(6, 'Agung Tirtayasa', '087329464329', 'atirta@gmail.com', '', 'Bandung', 1),
-(7, 'Adi Kusuma', '08124365834', 'adikusuma@gmail.com', '', 'Jakarta Selatan', 1),
-(9, 'mikael', '081243268345', 'jajang@gmail.com', 'dadang123', 'Jakarta Utara', 2),
-(15, 'mikael jajang', '081243268345', 'dadang@gmail.com', 'jajang123', 'Jakarta Utara', 3),
-(17, 'admin', 'admin', 'admin@gmail.com', 'admin123', 'Bogor', 3),
-(19, 'kaisar', 'string', 'kaisar.valentino123@gmail.com', 'string', 'string', 1);
+INSERT INTO `users` (`Id`, `Name`, `Phone`, `Email`, `Password`, `Address`, `User_Type`, `IsVerified`) VALUES
+(1, 'Wanda P', '081232874632', 'wandap@gmail.com', 'wanda123', 'Jakarta Timur', 2, 0),
+(2, 'Andi Pranata', '081234278282', 'andipranata@gmail.com', '', 'Kab. Bogor', 2, 0),
+(3, 'Dimas Wahyudi', '089512351818', 'dimaswhyd@gmail.com', '', 'Bekasi Timur', 2, 0),
+(4, 'Alan Kusuma', '082273482682', 'alankusuma@gmail.com', '', 'Malang', 2, 0),
+(5, 'Hadi Wijaya', '087324964329', 'wijayahadi@gmail.com', '', 'Blitar', 2, 0),
+(6, 'Agung Tirtayasa', '087329464329', 'atirta@gmail.com', '', 'Bandung', 1, 0),
+(7, 'Adi Kusuma', '08124365834', 'adikusuma@gmail.com', '', 'Jakarta Selatan', 1, 0),
+(9, 'mikael', '081243268345', 'jajang@gmail.com', 'dadang123', 'Jakarta Utara', 2, 0),
+(15, 'mikael jajang', '081243268345', 'dadang@gmail.com', 'jajang123', 'Jakarta Utara', 3, 0),
+(17, 'admin', 'admin', 'admin@gmail.com', 'admin123', 'Bogor', 3, 0),
+(19, 'kaisar', 'string', 'kaisar.valentino123@gmail.com', 'string', 'string', 1, 0);
 
 --
 -- Indexes for dumped tables
