@@ -1,7 +1,10 @@
 package main
 
-// import "github.com/gorilla/mux"
+import (
+	"github.com/gorilla/mux"
+)
 
-// func main() {
+func main() {
+	router := mux.NewRouter()
 
-// }
+}
