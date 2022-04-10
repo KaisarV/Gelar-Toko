@@ -60,8 +60,8 @@ func Authenticate(next http.HandlerFunc, accessType int) http.HandlerFunc {
 }
 
 func validateUserToken(w http.ResponseWriter, r *http.Request, accessType int) bool {
-	isAccessTokenValid, id, email, userType := validateTokenFromCookies(r)
-	fmt.Print(id, email, userType, accessType, isAccessTokenValid)
+	isAccessTokenValid, id, name, userType := validateTokenFromCookies(r)
+	fmt.Print(id, name, userType, accessType, isAccessTokenValid)
 
 	if isAccessTokenValid {
 		isUserValid := userType == accessType
