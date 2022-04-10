@@ -64,7 +64,7 @@ func validateUserToken(w http.ResponseWriter, r *http.Request, accessType int) b
 	fmt.Print(id, name, userType, accessType, isAccessTokenValid)
 
 	if isAccessTokenValid {
-		isUserValid := userType == accessType
+		isUserValid := userType >= accessType
 		fmt.Print(isUserValid)
 		if isUserValid {
 			return true

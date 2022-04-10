@@ -8,7 +8,7 @@ type User struct {
 	Password   string `json:"password,omitempty"`
 	Address    string `json:"address"`
 	UserType   int    `json:"usertype"`
-	IsVerified int    `json:"isVerified"`
+	IsVerified int    `json:"isVerified,omitempty"`
 }
 
 type UsersResponse struct {

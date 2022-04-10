@@ -12,8 +12,15 @@ import (
 func main() {
 	router := mux.NewRouter()
 
+	//1. User Biasa 2. Memiliki Toko 3. Admin
+
 	router.HandleFunc("/login", controller.UserLogin).Methods("POST")
 	router.HandleFunc("/logout", controller.Logout).Methods("GET")
+	router.HandleFunc("/register", controller.InsertUser).Methods("POST")
+
+	router.HandleFunc("/users", controller.GetAllUsers).Methods("GET")
+	router.HandleFunc("/users/{id}", controller.Authenticate(controller.DeleteUser, 3)).Methods("DELETE")
+	router.HandleFunc("/users", controller.Authenticate(controller.UpdateMyProfile, 1)).Methods("PUT")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -25,5 +32,4 @@ func main() {
 
 	err := http.ListenAndServe(":8080", handler)
 	log.Fatal(err)
-
 }
