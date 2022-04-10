@@ -23,6 +23,9 @@ func main() {
 	router.HandleFunc("/users", controller.Authenticate(controller.UpdateMyProfile, 1)).Methods("PUT")
 
 	router.HandleFunc("/stores", controller.GetAllStores).Methods("GET")
+	router.HandleFunc("/stores", controller.Authenticate(controller.InsertMyStore, 1)).Methods("POST")
+	router.HandleFunc("/stores", controller.Authenticate(controller.DeleteMyStore, 2)).Methods("DELETE")
+	router.HandleFunc("/stores", controller.Authenticate(controller.UpdateMyStore, 2)).Methods("PUT")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
