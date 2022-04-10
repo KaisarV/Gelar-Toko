@@ -28,9 +28,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		response.Status = 400
 		response.Message = err.Error()
-		w.WriteHeader(400)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		SendResponse(w, response.Status, response)
 		return
 	}
 
@@ -52,10 +50,8 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	} else {
 		response.Status = 400
 		response.Message = "Data Not Found"
-		w.WriteHeader(400)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	SendResponse(w, response.Status, response)
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -81,9 +77,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if RowsAffected == 0 {
 		response.Status = 400
 		response.Message = "User not found"
-		w.WriteHeader(400)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		SendResponse(w, response.Status, response)
 		return
 	}
 
@@ -96,8 +90,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		log.Println(errQuery.Error())
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	SendResponse(w, response.Status, response)
 }
 
 func InsertUser(w http.ResponseWriter, r *http.Request) {
@@ -109,8 +102,7 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 		response.Status = 400
 		response.Message = "You are already logged in"
 		w.WriteHeader(400)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		SendResponse(w, response.Status, response)
 		return
 	}
 
@@ -136,45 +128,35 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 	if user.Name == "" {
 		response.Status = 400
 		response.Message = "Please Insert User's Name"
-		w.WriteHeader(400)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		SendResponse(w, response.Status, response)
 		return
 	}
 
 	if user.Phone == "" {
 		response.Status = 400
 		response.Message = "Please Insert User's Phone"
-		w.WriteHeader(400)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		SendResponse(w, response.Status, response)
 		return
 	}
 
 	if user.Address == "" {
 		response.Status = 400
 		response.Message = "Please Insert User's Address"
-		w.WriteHeader(400)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		SendResponse(w, response.Status, response)
 		return
 	}
 
 	if user.Email == "" {
 		response.Status = 400
 		response.Message = "Please Insert User's Email"
-		w.WriteHeader(400)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		SendResponse(w, response.Status, response)
 		return
 	}
 
 	if user.Password == "" {
 		response.Status = 400
 		response.Message = "Please Insert User's Password"
-		w.WriteHeader(400)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		SendResponse(w, response.Status, response)
 		return
 	}
 
@@ -194,9 +176,7 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 	if i != 0 {
 		response.Status = 400
 		response.Message = "Email already registered"
-		w.WriteHeader(400)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		SendResponse(w, response.Status, response)
 		return
 	}
 
@@ -215,11 +195,9 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 		response.Status = 400
 		response.Message = "Error Insert Data"
 		log.Println(errQuery.Error())
-		w.WriteHeader(400)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	SendResponse(w, response.Status, response)
 }
 
 func UpdateMyProfile(w http.ResponseWriter, r *http.Request) {
