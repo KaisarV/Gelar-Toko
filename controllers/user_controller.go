@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	config "GelarToko/config"
+	"GelarToko/gomail"
 	model "GelarToko/models"
 
 	"github.com/gorilla/mux"
@@ -107,6 +108,8 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := config.Connect()
+	defer db.Close()
+
 	err := r.ParseForm()
 
 	if err != nil {
@@ -185,12 +188,12 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 	id, _ := res.LastInsertId()
 
 	if errQuery == nil {
-		// gomail.SendMail(user.Email, user.Name)
 		response.Status = 200
 		response.Message = "Success"
 		user.UserType = 1
 		user.ID = int(id)
 		response.Data = user
+		gomail.SendRegisterMail(user.Email, user.Name, user.ID)
 	} else {
 		response.Status = 400
 		response.Message = "Error Insert Data"
@@ -206,6 +209,7 @@ func UpdateMyProfile(w http.ResponseWriter, r *http.Request) {
 	var response model.UserResponse
 
 	db := config.Connect()
+	defer db.Close()
 	err := r.ParseForm()
 
 	if err != nil {
@@ -277,12 +281,56 @@ func UpdateMyProfile(w http.ResponseWriter, r *http.Request) {
 		response.Message = "Data Not Found"
 		w.WriteHeader(400)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	SendResponse(w, response.Status, response)
 
 	if user.Name != "" {
 		generateToken(w, user.ID, user.Name, user.UserType)
 	}
+}
+
+func VerifyToken(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	token := vars["token"]
+	userId := GetDataFromToken(token)
+	var response model.ErrorResponse
+
+	if userId == -1 {
+		response.Status = 400
+		response.Message = "Id Not Found"
+		SendResponse(w, response.Status, response)
+		return
+	}
+
+	db := config.Connect()
+	defer db.Close()
+
+	rows, _ := db.Query("SELECT * FROM users WHERE Id = ?", userId)
+
+	i := 0
+	for rows.Next() {
+		i++
+	}
+
+	if i == 0 {
+		response.Status = 400
+		response.Message = "Account Not Found"
+		SendResponse(w, response.Status, response)
+		return
+	}
+
+	_, errQuery := db.Exec(`UPDATE users SET IsVerified = ? WHERE id = ?`, 1, userId)
+
+	if errQuery == nil {
+		response.Status = 200
+		response.Message = "Success Verify Account"
+	} else {
+		response.Status = 400
+		response.Message = "Failed Verify Account"
+		log.Println(errQuery)
+	}
+
+	SendResponse(w, response.Status, response)
 }
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
@@ -358,4 +406,42 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func VerifyTokenById(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	userId := vars["id"]
+
+	var response model.ErrorResponse
+
+	db := config.Connect()
+	defer db.Close()
+
+	rows, _ := db.Query("SELECT * FROM users WHERE Id = ?", userId)
+
+	i := 0
+	for rows.Next() {
+		i++
+	}
+
+	if i == 0 {
+		response.Status = 400
+		response.Message = "Account Not Found"
+		SendResponse(w, response.Status, response)
+		return
+	}
+
+	_, errQuery := db.Exec(`UPDATE users SET IsVerified = ? WHERE id = ?`, 1, userId)
+
+	if errQuery == nil {
+		response.Status = 200
+		response.Message = "Success Verify Account"
+	} else {
+		response.Status = 400
+		response.Message = "Failed Verify Account"
+		log.Println(errQuery)
+	}
+
+	SendResponse(w, response.Status, response)
 }

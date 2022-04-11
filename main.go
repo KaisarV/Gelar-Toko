@@ -17,6 +17,10 @@ func main() {
 	router.HandleFunc("/login", controller.UserLogin).Methods("POST")
 	router.HandleFunc("/logout", controller.Logout).Methods("GET")
 	router.HandleFunc("/register", controller.InsertUser).Methods("POST")
+	//Verifikasi akun setelah login dengan link yang dikirim ke email
+	router.HandleFunc("/verify/{token}", controller.VerifyToken).Methods("GET")
+	//Verifikasi akun manual(untuk testing tanpa lewat email(email dummy))
+	router.HandleFunc("/verify/testing/{id}", controller.VerifyTokenById).Methods("GET")
 
 	router.HandleFunc("/users", controller.GetAllUsers).Methods("GET")
 	router.HandleFunc("/users/{id}", controller.Authenticate(controller.DeleteUser, 3)).Methods("DELETE")
