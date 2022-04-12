@@ -22,14 +22,18 @@ func main() {
 	//Verifikasi akun manual(untuk testing tanpa lewat email(email dummy))
 	router.HandleFunc("/verify/testing/{id}", controller.VerifyTokenById).Methods("GET")
 
-	router.HandleFunc("/users", controller.GetAllUsers).Methods("GET")
-	router.HandleFunc("/users/{id}", controller.Authenticate(controller.DeleteUser, 3)).Methods("DELETE")
-	router.HandleFunc("/users", controller.Authenticate(controller.UpdateMyProfile, 1)).Methods("PUT")
+	router.HandleFunc("/users/GetAllUsers", controller.GetAllUsers).Methods("GET")
+	router.HandleFunc("/users/DeleteUser/{id}", controller.Authenticate(controller.DeleteUser, 3)).Methods("DELETE")
+	router.HandleFunc("/users/UpdateProfile", controller.Authenticate(controller.UpdateMyProfile, 1)).Methods("PUT")
 
-	router.HandleFunc("/stores", controller.GetAllStores).Methods("GET")
-	router.HandleFunc("/stores", controller.Authenticate(controller.InsertMyStore, 1)).Methods("POST")
-	router.HandleFunc("/stores", controller.Authenticate(controller.DeleteMyStore, 2)).Methods("DELETE")
-	router.HandleFunc("/stores", controller.Authenticate(controller.UpdateMyStore, 2)).Methods("PUT")
+	router.HandleFunc("/stores/GetAllStores", controller.GetAllStores).Methods("GET")
+	router.HandleFunc("/stores/InsertMyStore", controller.Authenticate(controller.InsertMyStore, 1)).Methods("POST")
+	router.HandleFunc("/stores/DeleteMyStore", controller.Authenticate(controller.DeleteMyStore, 2)).Methods("DELETE")
+	router.HandleFunc("/stores/UpdateMyStore", controller.Authenticate(controller.UpdateMyStore, 2)).Methods("PUT")
+
+	//transactions
+	router.HandleFunc("/transactions/GetTransactions", controller.Authenticate(controller.GetTransaction, 1)).Methods("GET")
+	router.HandleFunc("/transactions/InsertNewTransactions", controller.Authenticate(controller.InsertNewTransactions, 1)).Methods("POST")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
