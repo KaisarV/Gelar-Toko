@@ -4,7 +4,8 @@ type Chat struct {
 	ID         int    `json:"id,omitempty"`
 	SenderId   int    `json:"senderid,omitempty"`
 	ReceiverId int    `json:"receiverid,omitempty"`
-	Text       string `json:"text"`
+	CustomerId int    `json:"customerId,omitempty"`
+	Chat       string `json:"text"`
 	Date       string `json:"Date,omitempty"`
 }
 
