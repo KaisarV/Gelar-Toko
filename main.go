@@ -31,11 +31,12 @@ func main() {
 	router.HandleFunc("/stores", controller.Authenticate(controller.UpdateMyStore, 2)).Methods("PUT")
 
 	//Chat
-	router.HandleFunc("/chat/{receiverId}/{userType}", controller.Authenticate(controller.UpdateMyProfile, 1)).Methods("POST")
+	router.HandleFunc("/chat/{receiverId}/{userType}", controller.Authenticate(controller.SendChat, 1)).Methods("POST")
+	router.HandleFunc("/chat/{userType}", controller.Authenticate(controller.GetChat, 1)).Methods("GET")
 
 	//transactions
 	router.HandleFunc("/transactions/GetTransactions", controller.Authenticate(controller.GetTransaction, 1)).Methods("GET")
-	router.HandleFunc("/transactions/InsertNewTransactions", controller.Authenticate(controller.InsertNewTransactions, 1)).Methods("POST")
+	router.HandleFunc("/transactions", controller.Authenticate(controller.InsertNewTransactions, 1)).Methods("POST")
 
 	//feedback
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.GetFeedback, 1)).Methods("GET")
