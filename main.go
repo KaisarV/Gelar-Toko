@@ -37,6 +37,11 @@ func main() {
 	router.HandleFunc("/transactions/GetTransactions", controller.Authenticate(controller.GetTransaction, 1)).Methods("GET")
 	router.HandleFunc("/transactions/InsertNewTransactions", controller.Authenticate(controller.InsertNewTransactions, 1)).Methods("POST")
 
+	//feedback
+	router.HandleFunc("/feedbacks", controller.Authenticate(controller.GetFeedback, 1)).Methods("GET")
+	router.HandleFunc("/feedbacks", controller.Authenticate(controller.InsertNewFeedback, 1)).Methods("POST")
+	router.HandleFunc("/feedbacks/all", controller.Authenticate(controller.GetAllFeedbacks, 3)).Methods("GET")
+
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
