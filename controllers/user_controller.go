@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	config "GelarToko/config"
 	"GelarToko/gomail"
 	model "GelarToko/models"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 )
 
@@ -388,6 +390,15 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		response.Message = "Login Success"
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
+		//set redis
+		rdb := redis.NewClient(&redis.Options{
+			Addr:     "localhost:6379",
+			Password: "", // no password set
+			DB:       0,  // use default DB
+		})
+		SetRedis(rdb, "userID", strconv.Itoa(user.ID), 0)
+		SetRedis(rdb, "userName", user.Name, 0)
+		SetRedis(rdb, "userType", strconv.Itoa(user.UserType), 0)
 	} else {
 		response.Status = 400
 		response.Message = "Login Failed"
