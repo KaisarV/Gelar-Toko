@@ -71,7 +71,7 @@ func DeleteMyStore(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if errQuery == nil {
-		query, errQuery = db.Exec("UPDATE users SET User_Type = ? WHERE Id = ?", 1, userId)
+		query, _ = db.Exec("UPDATE users SET User_Type = ? WHERE Id = ?", 1, userId)
 		response.Status = 200
 		response.Message = "Success Delete Data"
 		generateToken(w, userId, userName, 1)
@@ -136,7 +136,7 @@ func InsertMyStore(w http.ResponseWriter, r *http.Request) {
 	id, _ := res.LastInsertId()
 
 	if errQuery == nil {
-		res, errQuery = db.Exec("UPDATE users SET User_Type = ? WHERE Id = ?", 2, store.UserId)
+		res, _ = db.Exec("UPDATE users SET User_Type = ? WHERE Id = ?", 2, store.UserId)
 		response.Status = 200
 		response.Message = "Success"
 		store.ID = int(id)

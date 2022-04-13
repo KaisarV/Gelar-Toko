@@ -35,6 +35,11 @@ func main() {
 	router.HandleFunc("/transactions/GetTransactions", controller.Authenticate(controller.GetTransaction, 1)).Methods("GET")
 	router.HandleFunc("/transactions/InsertNewTransactions", controller.Authenticate(controller.InsertNewTransactions, 1)).Methods("POST")
 
+	//products
+	router.HandleFunc("/products", controller.GetAllProduct).Methods("GET")
+	router.HandleFunc("/products", controller.Authenticate(controller.InsertNewProduct, 1)).Methods("POST")
+	router.HandleFunc("/products/update/{id}", controller.Authenticate(controller.UpdateProduct, 1)).Methods("PUT")
+
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
