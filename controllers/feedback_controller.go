@@ -3,9 +3,9 @@ package controllers
 import (
 	config "GelarToko/config"
 	model "GelarToko/models"
+	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 func InsertNewFeedback(w http.ResponseWriter, r *http.Request) {
@@ -16,10 +16,10 @@ func InsertNewFeedback(w http.ResponseWriter, r *http.Request) {
 	var feedback model.Feedback
 	_, userId, _, _ := validateTokenFromCookies(r)
 
-	feedback.UserId, _ = strconv.Atoi(r.Form.Get("userID"))
-	feedback.Feedback = r.Form.Get("Feedback")
-
 	err := r.ParseForm()
+	feedback.Feedback = r.Form.Get("Feedback")
+	fmt.Print(feedback.Feedback)
+
 	if err != nil {
 		response.Status = 400
 		response.Message = "Error Parsing Data"
@@ -27,7 +27,7 @@ func InsertNewFeedback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, errQuery := db.Exec("INSERT INTO feedbacks (userid, feedback, date) VALUES (?,?,SYSDATE)", userId, feedback.Feedback)
+	_, errQuery := db.Exec("INSERT INTO feedbacks (user_id, feedback) VALUES (?,?)", userId, feedback.Feedback)
 
 	if errQuery == nil {
 		response.Status = 200
@@ -46,7 +46,7 @@ func GetFeedback(w http.ResponseWriter, r *http.Request) {
 	db := config.Connect()
 	defer db.Close()
 
-	var response model.FeedbackResponse
+	var response model.FeedbacksResponse
 	var feedback model.Feedback
 	var feedbacks []model.Feedback
 	_, userId, _, _ := validateTokenFromCookies(r)
@@ -58,10 +58,10 @@ func GetFeedback(w http.ResponseWriter, r *http.Request) {
 		SendResponse(w, response.Status, response)
 		return
 	}
-	convertedString := strconv.Itoa(userId)
+	// convertedString := strconv.Itoa(userId)
 
-	query := "SELECT * FROM  Feedbacks  WHERE User_id  = " + convertedString
-	rows, err := db.Query(query)
+	// query := "SELECT * FROM  Feedbacks  WHERE User_id  = " + convertedString
+	rows, err := db.Query("SELECT * FROM  Feedbacks  WHERE User_id  = ? ", userId)
 
 	if err != nil {
 		response.Status = 400
@@ -80,7 +80,7 @@ func GetFeedback(w http.ResponseWriter, r *http.Request) {
 	if len(feedbacks) != 0 {
 		response.Status = 200
 		response.Message = "Succes Get Data"
-		response.Data = feedback
+		response.Data = feedbacks
 		SendResponse(w, response.Status, response)
 	} else if response.Message == "" {
 		response.Status = 400
