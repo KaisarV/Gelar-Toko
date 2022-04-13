@@ -66,8 +66,9 @@ func GetReviews(w http.ResponseWriter, r *http.Request) {
 	}
 	convertedString := strconv.Itoa(userId)
 	query := ""
+	review.ProductId, _ = strconv.Atoi(r.Form.Get("productID"))
 
-	_, errQuery := db.Exec("SELECT FROM transactions WHERE ID = ?'", review.UserId)
+	_, errQuery := db.Exec("SELECT FROM Products WHERE ID = ?'", review.ProductId)
 	if errQuery != nil {
 		query = "SELECT * FROM  Reviews  WHERE User_id  = " + convertedString
 	}
@@ -109,7 +110,8 @@ func GetAllReviews(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	query := ""
-	_, errQuery := db.Exec("SELECT FROM transactions WHERE ID = ?'", review.UserId)
+	review.ProductId, _ = strconv.Atoi(r.Form.Get("productID"))
+	_, errQuery := db.Exec("SELECT FROM transactions WHERE ID = ?'", review.ProductId)
 	if errQuery != nil {
 		query = "SELECT * FROM Reviews"
 		id := r.URL.Query()["id"]
