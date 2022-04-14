@@ -43,6 +43,11 @@ func main() {
 	router.HandleFunc("/products", controller.Authenticate(controller.InsertNewProduct, 1)).Methods("POST")
 	router.HandleFunc("/products/update/{id}", controller.Authenticate(controller.UpdateProduct, 1)).Methods("PUT")
 
+	//cart
+	router.HandleFunc("/cart/InsertItemCart", controller.Authenticate(controller.InsertCartItem, 1)).Methods("GET")
+	router.HandleFunc("/cart", controller.Authenticate(controller.GetCartItem, 1)).Methods("POST")
+	router.HandleFunc("/cart", controller.Authenticate(controller.DeleteCartItem, 2)).Methods("DELETE")
+
 	//feedback
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.GetFeedback, 1)).Methods("GET")
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.InsertNewFeedback, 1)).Methods("POST")
