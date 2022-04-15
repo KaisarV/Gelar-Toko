@@ -289,6 +289,28 @@ func UpdateMyProfile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func BlockUser(w http.ResponseWriter, r *http.Request) {
+	db := config.Connect()
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	userId := vars["id"]
+
+	var response model.ErrorResponse
+
+	_, errQuery := db.Exec(`UPDATE users SET Is_Verified = ? WHERE id = ?`, -1, userId)
+
+	if errQuery == nil {
+		response.Status = 200
+		response.Message = "Success Block User"
+
+	} else {
+		response.Status = 400
+		response.Message = "Error Block User"
+	}
+	SendResponse(w, response.Status, response)
+}
+
 func VerifyToken(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
