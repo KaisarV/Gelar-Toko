@@ -320,7 +320,7 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, errQuery := db.Exec(`UPDATE users SET IsVerified = ? WHERE id = ?`, 1, userId)
+	_, errQuery := db.Exec(`UPDATE users SET Is_Verified = ? WHERE id = ?`, 1, userId)
 
 	if errQuery == nil {
 		response.Status = 200
@@ -434,7 +434,7 @@ func VerifyTokenById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, errQuery := db.Exec(`UPDATE users SET IsVerified = ? WHERE id = ?`, 1, userId)
+	_, errQuery := db.Exec(`UPDATE users SET Is_Verified = ? WHERE id = ?`, 1, userId)
 
 	if errQuery == nil {
 		response.Status = 200
