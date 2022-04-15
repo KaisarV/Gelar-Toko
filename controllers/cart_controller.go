@@ -118,8 +118,8 @@ func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	userId := vars["id"]
-	productId := vars["id"]
+	userId := vars["id"]    // 2 param buat delet
+	productId := vars["id"] //userid -> kerangjang siapa productid -> barang yang mana
 	query, errQuery := db.Exec(`DELETE FROM cart WHERE userId = "` + userId + `" And productId = "` + productId + `"`)
 	RowsAffected, err := query.RowsAffected()
 
