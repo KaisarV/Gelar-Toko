@@ -49,6 +49,12 @@ func main() {
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.InsertNewFeedback, 1)).Methods("POST")
 	router.HandleFunc("/feedbacks/all", controller.Authenticate(controller.GetAllFeedbacks, 3)).Methods("GET")
 
+	//Product Review
+	router.HandleFunc("/review/{productid}", controller.Authenticate(controller.InsertMyProductReview, 1)).Methods("POST")
+	router.HandleFunc("/reviews", controller.Authenticate(controller.GetAllMyProductReviews, 1)).Methods("GET")
+	router.HandleFunc("/review/{productid}", controller.Authenticate(controller.DeleteMyProductReview, 1)).Methods("DELETE")
+	router.HandleFunc("/review/{productid}", controller.Authenticate(controller.UpdateMyProductReview, 1)).Methods("PUT")
+
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
