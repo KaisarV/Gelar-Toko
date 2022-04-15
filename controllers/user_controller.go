@@ -74,7 +74,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userId := vars["id"]
 	query, errQuery := db.Exec(`DELETE FROM users WHERE id = ?;`, userId)
-	RowsAffected, err := query.RowsAffected()
+	RowsAffected, _ := query.RowsAffected()
 
 	if RowsAffected == 0 {
 		response.Status = 400

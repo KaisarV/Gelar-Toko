@@ -208,8 +208,89 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 func DeleteProduct(w http.ResponseWriter, r *http.Request) {
 
+	db := config.Connect()
+	defer db.Close()
+
+	var store model.Store
+	var stores []model.Store
+	var product model.Product
+	var response model.ProductResponse
+
+	_, store.UserId, _, _ = validateTokenFromCookies(r)
+
+	err := r.ParseForm()
+
+	if err != nil {
+		response.Status = 400
+		response.Message = "Error Parsing Data"
+		SendResponse(w, response.Status, response)
+	}
+
+	//cek id toko
+	rows, _ := db.Query("SELECT Id FROM stores WHERE User_Id = ?", store.UserId)
+	for rows.Next() {
+		if err := rows.Scan(&store.ID); err != nil {
+			response.Status = 400
+			response.Message = "Internal Error"
+			SendResponse(w, response.Status, response)
+		} else {
+			stores = append(stores, store)
+		}
+
+	}
+
+	vars := mux.Vars(r)
+	product.ID, _ = strconv.Atoi(vars["id"])
+	//delete barang yang ada di toko tersebut
+	query, errQuery := db.Exec(`DELETE FROM products WHERE id = ? AND Store_id = ?;`, product.ID, stores[0].ID)
+	RowsAffected, _ := query.RowsAffected()
+
+	if RowsAffected == 0 {
+		response.Status = 400
+		response.Message = "There is no such product on the store"
+		SendResponse(w, response.Status, response)
+		return
+	}
+
+	if errQuery == nil {
+		response.Status = 200
+		response.Message = "Success Delete Data"
+	} else {
+		response.Status = 400
+		response.Message = "Error Delete Data"
+		w.WriteHeader(400)
+	}
+	SendResponse(w, response.Status, response)
 }
 
-func BlockirProduct(w http.ResponseWriter, r *http.Request) {
+func BlockProduct(w http.ResponseWriter, r *http.Request) {
 
+	db := config.Connect()
+	defer db.Close()
+
+	var product model.Product
+	var response model.ProductResponse
+
+	err := r.ParseForm()
+
+	if err != nil {
+		response.Status = 400
+		response.Message = "Error Parsing Data"
+		SendResponse(w, response.Status, response)
+	}
+	vars := mux.Vars(r)
+	product.ID, _ = strconv.Atoi(vars["id"])
+	//mencari barang yg akan di blokir
+	_, errQuery := db.Exec(`UPDATE products SET isBlocked = 1 , WHERE id = ?`, product.ID)
+
+	if errQuery != nil {
+		response.Status = 400
+		response.Message = "Blocking product Fail"
+		SendResponse(w, response.Status, response)
+	} else {
+		response.Status = 200
+		response.Message = "Success blocking product"
+		response.Data = product
+		SendResponse(w, response.Status, response)
+	}
 }
