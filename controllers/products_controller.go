@@ -263,9 +263,34 @@ func DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	SendResponse(w, response.Status, response)
 }
 
-func BlockirProduct(w http.ResponseWriter, r *http.Request) {
+func BlockProduct(w http.ResponseWriter, r *http.Request) {
 
 	db := config.Connect()
 	defer db.Close()
 
+	var product model.Product
+	var response model.ProductResponse
+
+	err := r.ParseForm()
+
+	if err != nil {
+		response.Status = 400
+		response.Message = "Error Parsing Data"
+		SendResponse(w, response.Status, response)
+	}
+	vars := mux.Vars(r)
+	product.ID, _ = strconv.Atoi(vars["id"])
+	//mencari barang yg akan di blokir
+	_, errQuery := db.Exec(`UPDATE products SET isBlocked = 1 , WHERE id = ?`, product.ID)
+
+	if errQuery != nil {
+		response.Status = 400
+		response.Message = "Blocking product Fail"
+		SendResponse(w, response.Status, response)
+	} else {
+		response.Status = 200
+		response.Message = "Success blocking product"
+		response.Data = product
+		SendResponse(w, response.Status, response)
+	}
 }
