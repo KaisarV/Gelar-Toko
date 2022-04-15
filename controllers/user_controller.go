@@ -6,7 +6,8 @@ import (
 	"net/http"
 
 	config "GelarToko/config"
-	"GelarToko/gomail"
+	gomail "GelarToko/gomail"
+	goroutine "GelarToko/goroutine"
 	model "GelarToko/models"
 
 	"github.com/gorilla/mux"
@@ -386,6 +387,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 
 		response.Status = 200
 		response.Message = "Login Success"
+		go goroutine.SendLoginMail(user.Email, user.Name)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
 	} else {
