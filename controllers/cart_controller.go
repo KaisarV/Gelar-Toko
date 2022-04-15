@@ -31,7 +31,7 @@ func GetCartItem(w http.ResponseWriter, r *http.Request) {
 	// convertedString := strconv.Itoa(userId)
 
 	// query := "SELECT * FROM  transactions  WHERE User_Id  = " + convertedString
-	rows, err := db.Query("SELECT * FROM  cart  WHERE userId =? ", userId)
+	rows, err := db.Query("SELECT * FROM  carts  WHERE id_user =? ", userId)
 
 	if err != nil {
 		response.Status = 400
@@ -80,7 +80,7 @@ func InsertCartItem(w http.ResponseWriter, r *http.Request) {
 	cart.ProductId, _ = strconv.Atoi(r.Form.Get("ProductID"))
 	cart.Quantity, _ = strconv.Atoi(r.Form.Get("Quantity"))
 
-	res, errQuery := db.Exec("INSERT INTO cart (User_Id, Product_Id, Quantity) VALUES (?, ?, ?)",
+	res, errQuery := db.Exec("INSERT INTO carts (id_user, id_barang, Quantity) VALUES (?, ?, ?)",
 		cart.UserId,
 		cart.ProductId,
 		cart.Quantity,
@@ -108,6 +108,7 @@ func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	var response model.ErrorResponse
+	var cart model.Cart
 
 	if err != nil {
 		response.Status = 400
@@ -118,9 +119,12 @@ func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	userId := vars["id"]    // 2 param buat delet
-	productId := vars["id"] //userid -> kerangjang siapa productid -> barang yang mana
-	query, errQuery := db.Exec(`DELETE FROM cart WHERE userId = "` + userId + `" And productId = "` + productId + `"`)
+	_, cart.UserId, _, _ = validateTokenFromCookies(r) // 2 param buat delet
+	productId := vars["prodId"]                        //userid -> kerangjang siapa productid -> barang yang mana
+	query, errQuery := db.Exec(`DELETE FROM carts WHERE id_user = ? And id_barang = ?`,
+		cart.UserId,
+		productId,
+	)
 	RowsAffected, err := query.RowsAffected()
 
 	if RowsAffected == 0 {
