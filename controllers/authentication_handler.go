@@ -2,8 +2,10 @@ package controllers
 
 import (
 	model "GelarToko/models"
+	"GelarToko/utils"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -13,7 +15,10 @@ var jwtKey = []byte("Jksdgbfkd334dsj")
 var tokenName = "token"
 
 func generateToken(w http.ResponseWriter, id int, name string, userType int) {
-	tokenExpiryTime := time.Now().Add(5 * time.Minute)
+
+	timeout, _ := strconv.Atoi(utils.Getenv("TOKEN_MINUTE_LIFESPAN", "1"))
+
+	tokenExpiryTime := time.Now().Add(time.Duration(timeout) * time.Minute)
 
 	claims := &model.Claims{
 		ID:       id,
