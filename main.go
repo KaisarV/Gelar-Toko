@@ -6,10 +6,17 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
 
 func main() {
+	// for load godotenv
+	er := godotenv.Load()
+	if er != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	router := mux.NewRouter()
 
 	//1. User Biasa 2. Memiliki Toko 3. Admin
