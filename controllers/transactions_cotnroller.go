@@ -27,6 +27,36 @@ func InsertNewTransactions(w http.ResponseWriter, r *http.Request) {
 	transaction.ProductId, _ = strconv.Atoi(r.Form.Get("ProductID"))
 	transaction.Quantity, _ = strconv.Atoi(r.Form.Get("Quantity"))
 
+	rows, _ := db.Query("SELECT Stock FROM products WHERE Id = ?", transaction.ProductId)
+
+	var product model.Product
+	var products []model.Product
+
+	i := 0
+	for rows.Next() {
+		if err := rows.Scan(&product.Stock); err != nil {
+		} else {
+			products = append(products, product)
+		}
+		i++
+	}
+
+	if i == 0 {
+		response.Status = 400
+		response.Message = "Product not found"
+		SendResponse(w, response.Status, response)
+		return
+	}
+
+	if products[0].Stock < transaction.Quantity {
+		response.Status = 400
+		response.Message = "Insufficient product stock"
+		SendResponse(w, response.Status, response)
+		return
+	}
+
+	fmt.Println(products[0].Stock)
+
 	res, errQuery := db.Exec("INSERT INTO transactions (User_Id, Product_Id, Quantity) VALUES (?, ?, ?)", transaction.UserId, transaction.ProductId, transaction.Quantity)
 	// print(errQuery.Error())
 	id, _ := res.LastInsertId()
@@ -37,6 +67,16 @@ func InsertNewTransactions(w http.ResponseWriter, r *http.Request) {
 		transaction.ID = int(id)
 		response.Data = transaction
 		SendResponse(w, response.Status, response)
+		newStock := product.Stock - transaction.Quantity
+		_, err := db.Exec("UPDATE Products SET Stock = ? WHERE Id = ? ", newStock, transaction.ProductId)
+
+		if err != nil {
+			response.Status = 400
+			response.Message = "Error Update Product"
+			SendResponse(w, response.Status, response)
+			return
+		}
+
 	} else {
 		response.Status = 400
 		response.Message = "Error Insert Data"
@@ -75,7 +115,7 @@ func GetTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for rows.Next() {
-		if err := rows.Scan(&transaction.ID, &transaction.UserId, &transaction.ProductId, &transaction.Date, &transaction.Quantity); err != nil {
+		if err := rows.Scan(&transaction.ID, &transaction.UserId, &transaction.ProductId, &transaction.Date, &transaction.Quantity, &transaction.Status); err != nil {
 		} else {
 			transactions = append(transactions, transaction)
 		}
