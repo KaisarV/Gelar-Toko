@@ -6,6 +6,7 @@ type Transaction struct {
 	ProductId int    `json:"productId"`
 	Date      string `json:"date"`
 	Quantity  int    `json:"qty"`
+	Status    string `json:"status"`
 }
 
 type TransactionsResponse struct {
