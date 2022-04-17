@@ -16,10 +16,10 @@ func GetAllProduct(w http.ResponseWriter, r *http.Request) {
 	var response model.ProductsResponse
 	defer db.Close()
 
-	query := "SELECT Id, Name, Category, Price FROM products"
+	query := "SELECT Id, Name, Category, Price FROM products WHERE Is_Blocked = 0"
 	name := r.URL.Query()["name"]
 	if name != nil {
-		query += " WHERE Name LIKE % " + name[0] + "%"
+		query += " AND Name LIKE % " + name[0] + "%"
 	}
 
 	rows, err := db.Query(query)
@@ -278,6 +278,7 @@ func BlockProduct(w http.ResponseWriter, r *http.Request) {
 		response.Message = "Error Parsing Data"
 		SendResponse(w, response.Status, response)
 	}
+
 	vars := mux.Vars(r)
 	product.ID, _ = strconv.Atoi(vars["id"])
 	//mencari barang yg akan di blokir
