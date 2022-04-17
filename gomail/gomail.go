@@ -92,3 +92,81 @@ func ParseTemplate(templateFileName string, data interface{}) (string, error) {
 
 	return buf.String(), nil
 }
+
+func SendLoginMail(email string, name string) {
+	templateData := BodylinkEmail{
+		Name: name,
+	}
+
+	result, _ := ParseTemplate("gomail/login.html", templateData)
+	mailer := gomail.NewMessage()
+	mailer.SetHeader("From", CONFIG_SENDER_NAME)
+	mailer.SetHeader("To", email, email)
+	mailer.SetAddressHeader("Cc", email, "Pemberitahuan Login")
+	mailer.SetHeader("Subject", "Pemberitahuan Login")
+	mailer.SetBody("text/html", result)
+
+	dialer := gomail.NewDialer(
+		CONFIG_SMTP_HOST,
+		CONFIG_SMTP_PORT,
+		CONFIG_AUTH_EMAIL,
+		CONFIG_AUTH_PASSWORD,
+	)
+
+	err := dialer.DialAndSend(mailer)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+}
+
+func SendBlockMail(email string, name string) {
+	templateData := BodylinkEmail{
+		Name: name,
+	}
+
+	result, _ := ParseTemplate("gomail/block.html", templateData)
+	mailer := gomail.NewMessage()
+	mailer.SetHeader("From", CONFIG_SENDER_NAME)
+	mailer.SetHeader("To", email, email)
+	mailer.SetAddressHeader("Cc", email, "Pemberitahuan Block")
+	mailer.SetHeader("Subject", "Pemberitahuan Block")
+	mailer.SetBody("text/html", result)
+
+	dialer := gomail.NewDialer(
+		CONFIG_SMTP_HOST,
+		CONFIG_SMTP_PORT,
+		CONFIG_AUTH_EMAIL,
+		CONFIG_AUTH_PASSWORD,
+	)
+
+	err := dialer.DialAndSend(mailer)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+}
+
+func SendUnblockMail(email string, name string) {
+	templateData := BodylinkEmail{
+		Name: name,
+	}
+
+	result, _ := ParseTemplate("gomail/unblock.html", templateData)
+	mailer := gomail.NewMessage()
+	mailer.SetHeader("From", CONFIG_SENDER_NAME)
+	mailer.SetHeader("To", email, email)
+	mailer.SetAddressHeader("Cc", email, "Pemberitahuan Unblock")
+	mailer.SetHeader("Subject", "Pemberitahuan Unblock")
+	mailer.SetBody("text/html", result)
+
+	dialer := gomail.NewDialer(
+		CONFIG_SMTP_HOST,
+		CONFIG_SMTP_PORT,
+		CONFIG_AUTH_EMAIL,
+		CONFIG_AUTH_PASSWORD,
+	)
+
+	err := dialer.DialAndSend(mailer)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+}
