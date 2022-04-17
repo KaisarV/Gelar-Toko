@@ -1,11 +1,13 @@
 package models
 
 type Product struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Category string `json:"category"`
-	Price    int    `json:"price"`
-	StoreId  int    `json:"storeId"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Category  string `json:"category"`
+	Price     int    `json:"price"`
+	Stock     int    `json:"stock"`
+	StoreId   int    `json:"storeId"`
+	IsBlocked int    `json:"isBlocked"`
 }
 
 type ProductsResponse struct {
