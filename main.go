@@ -45,8 +45,8 @@ func main() {
 	router.HandleFunc("/chat/{userType}", controller.Authenticate(controller.GetChat, 1)).Methods("GET")
 
 	//transactions
-	router.HandleFunc("/transactions/GetTransactions", controller.Authenticate(controller.GetTransaction, 1)).Methods("GET")
-	router.HandleFunc("/transactions", controller.Authenticate(controller.InsertNewTransactions, 1)).Methods("POST")
+	router.HandleFunc("/transactions", controller.Authenticate(controller.GetTransaction, 1)).Methods("GET")
+	router.HandleFunc("/transaction", controller.Authenticate(controller.InsertNewTransactions, 1)).Methods("POST")
 
 	//products
 	router.HandleFunc("/products", controller.GetAllProduct).Methods("GET")
