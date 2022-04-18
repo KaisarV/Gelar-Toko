@@ -64,6 +64,12 @@ func main() {
 	router.HandleFunc("/products/unblock/{id}", controller.Authenticate(controller.UnblockProduct, 3)).Methods("PUT")
 	router.HandleFunc("/products/get-blocked-store-products", controller.Authenticate(controller.GetBlockedStoreProduct, 3)).Methods("GET")
 
+	//cart
+	router.HandleFunc("/cart", controller.Authenticate(controller.InsertCartItem, 1)).Methods("POST")
+	router.HandleFunc("/cart", controller.Authenticate(controller.GetCartItem, 1)).Methods("GET")
+	router.HandleFunc("/cart/{cartId}", controller.Authenticate(controller.DeleteCartItem, 2)).Methods("DELETE")
+	router.HandleFunc("/cart", controller.Authenticate(controller.UpdateCartItem, 2)).Methods("PUT")
+
 	//feedback
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.GetFeedback, 1)).Methods("GET")
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.InsertNewFeedback, 1)).Methods("POST")
