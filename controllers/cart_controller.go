@@ -125,7 +125,7 @@ func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
 		cart.UserId,
 		productId,
 	)
-	RowsAffected, err := query.RowsAffected()
+	RowsAffected, _ := query.RowsAffected()
 
 	if RowsAffected == 0 {
 		response.Status = 400
@@ -144,4 +144,43 @@ func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
 		log.Println(errQuery.Error())
 	}
 	SendResponse(w, response.Status, response)
+}
+
+func UpdateCartItem(w http.ResponseWriter, r *http.Request) {
+	db := config.Connect()
+	defer db.Close()
+
+	err := r.ParseForm()
+	var response model.CartsResponse
+	var carts []model.Cart
+
+	if err != nil {
+		response.Status = 400
+		response.Message = "Error Parsing Data"
+		w.WriteHeader(400)
+		log.Println(err.Error())
+		return
+	}
+
+	UserId, _ := strconv.Atoi(r.Form.Get("userId"))
+	ProductId, _ := strconv.Atoi(r.Form.Get("ProdId"))
+	Quantity, _ := strconv.Atoi(r.Form.Get("qty"))
+
+	_, errQuery := db.Exec(
+		`UPDATE carts SET Quantity = ? WHERE User_Id = ? AND Product_Id = ?`,
+		Quantity,
+		UserId,
+		ProductId,
+	)
+
+	if errQuery == nil {
+		response.Status = 200
+		response.Message = "Success"
+		response.Data = carts
+		SendResponse(w, response.Status, response)
+	} else {
+		response.Status = 400
+		response.Message = "Data Not Found"
+		SendResponse(w, response.Status, response)
+	}
 }
