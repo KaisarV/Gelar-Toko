@@ -50,7 +50,6 @@ func GetAllStores(w http.ResponseWriter, r *http.Request) {
 	}
 
 	SendResponse(w, response.Status, response)
-	return
 }
 
 func DeleteMyStore(w http.ResponseWriter, r *http.Request) {
