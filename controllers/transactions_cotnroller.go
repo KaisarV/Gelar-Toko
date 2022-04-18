@@ -158,7 +158,17 @@ func UpdateTransactions(w http.ResponseWriter, r *http.Request) {
 	//2 -> arrived
 	// Status, _ := strconv.Atoi(r.Form.Get("status"))
 
-	_, errQuery := db.Exec("UPDATE transactions set Status ='" + Status + "' WHERE Id = " + transactionsID)
+	_, errQuery := db.Exec(
+		"UPDATE transactions SET Status = ? WHERE Id = ? AND User_Id = ?",
+		// "UPDATE transactions SET Transactions.Status = ?" +
+		// "FROM transactions
+		// JOIN products ON products.Id = transactions.Product_Id" +
+		// "JOINproducts JOIN stores ON stores_Id = Id" +
+		// "WHERE transactions.Id = ? AND transactions.User_Id = ? AND Product.Store_Id = ?",
+		Status,
+		transactionsID,
+		userId,
+	)
 
 	if errQuery == nil {
 		response.Status = 200
