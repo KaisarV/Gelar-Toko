@@ -7,7 +7,6 @@ import (
 
 	config "GelarToko/config"
 	gomail "GelarToko/gomail"
-	goroutine "GelarToko/goroutine"
 	model "GelarToko/models"
 
 	"github.com/gorilla/mux"
@@ -297,16 +296,44 @@ func BlockUser(w http.ResponseWriter, r *http.Request) {
 	userId := vars["id"]
 
 	var response model.ErrorResponse
+	var user model.User
 
 	_, errQuery := db.Exec(`UPDATE users SET Is_Verified = ? WHERE id = ?`, -1, userId)
 
 	if errQuery == nil {
+		generateToken(w, user.ID, user.Name, user.UserType)
 		response.Status = 200
 		response.Message = "Success Block User"
+		go gomail.SendBlockMail(user.Email, user.Name)
 
 	} else {
 		response.Status = 400
 		response.Message = "Error Block User"
+	}
+	SendResponse(w, response.Status, response)
+}
+
+func UnblockUser(w http.ResponseWriter, r *http.Request) {
+	db := config.Connect()
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	userId := vars["id"]
+
+	var response model.ErrorResponse
+	var user model.User
+
+	_, errQuery := db.Exec(`UPDATE users SET Is_Verified = ? WHERE id = ?`, 1, userId)
+
+	if errQuery == nil {
+		generateToken(w, user.ID, user.Name, user.UserType)
+		response.Status = 200
+		response.Message = "Success Unblock User"
+		go gomail.SendUnblockMail(user.Email, user.Name)
+
+	} else {
+		response.Status = 400
+		response.Message = "Error Unblock User"
 	}
 	SendResponse(w, response.Status, response)
 }
@@ -411,7 +438,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 
 		response.Status = 200
 		response.Message = "Login Success"
-		go goroutine.SendLoginMail(user.Email, user.Name)
+		go gomail.SendLoginMail(user.Email, user.Name)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
 	} else {
