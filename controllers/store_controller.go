@@ -100,6 +100,12 @@ func InsertMyStore(w http.ResponseWriter, r *http.Request) {
 		SendResponse(w, response.Status, response)
 		return
 	}
+	if userType == 3 {
+		response.Status = 400
+		response.Message = "You are admin"
+		SendResponse(w, response.Status, response)
+		return
+	}
 
 	err := r.ParseForm()
 
