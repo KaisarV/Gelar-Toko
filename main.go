@@ -61,6 +61,8 @@ func main() {
 	router.HandleFunc("/products/update/{id}", controller.Authenticate(controller.UpdateProduct, 1)).Methods("PUT")
 	router.HandleFunc("/products/delete/{id}", controller.Authenticate(controller.DeleteProduct, 2)).Methods("DELETE")
 	router.HandleFunc("/products/block/{id}", controller.Authenticate(controller.BlockProduct, 3)).Methods("PUT")
+	router.HandleFunc("/products/unblock/{id}", controller.Authenticate(controller.UnblockProduct, 3)).Methods("PUT")
+	router.HandleFunc("/products/get-blocked-store-products", controller.Authenticate(controller.GetBlockedStoreProduct, 3)).Methods("GET")
 
 	//feedback
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.GetFeedback, 1)).Methods("GET")
