@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -289,6 +290,7 @@ func UpdateMyProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func BlockUser(w http.ResponseWriter, r *http.Request) {
+
 	db := config.Connect()
 	defer db.Close()
 
@@ -297,20 +299,33 @@ func BlockUser(w http.ResponseWriter, r *http.Request) {
 
 	var response model.ErrorResponse
 	var user model.User
+	var users []model.User
 
 	_, errQuery := db.Exec(`UPDATE users SET Is_Verified = ? WHERE id = ?`, -1, userId)
 
 	if errQuery == nil {
-		generateToken(w, user.ID, user.Name, user.UserType)
 		response.Status = 200
 		response.Message = "Success Block User"
-		go gomail.SendBlockMail(user.Email, user.Name)
+		rows, _ := db.Query("SELECT email,name FROM users WHERE Id = ?", userId)
+		for rows.Next() {
+			if err := rows.Scan(&user.Email, &user.Name); err != nil {
+				response.Status = 400
+				response.Message = "Internal Error"
+				SendResponse(w, response.Status, response)
+			} else {
+				users = append(users, user)
+			}
+
+		}
+		fmt.Print(users[0].Email)
+		go gomail.SendBlockMail(users[0].Email, users[0].Name)
 
 	} else {
 		response.Status = 400
 		response.Message = "Error Block User"
 	}
 	SendResponse(w, response.Status, response)
+
 }
 
 func UnblockUser(w http.ResponseWriter, r *http.Request) {
@@ -322,18 +337,30 @@ func UnblockUser(w http.ResponseWriter, r *http.Request) {
 
 	var response model.ErrorResponse
 	var user model.User
+	var users []model.User
 
 	_, errQuery := db.Exec(`UPDATE users SET Is_Verified = ? WHERE id = ?`, 1, userId)
 
 	if errQuery == nil {
-		generateToken(w, user.ID, user.Name, user.UserType)
 		response.Status = 200
-		response.Message = "Success Unblock User"
-		go gomail.SendUnblockMail(user.Email, user.Name)
+		response.Message = "Success unblock User"
+		rows, _ := db.Query("SELECT email,name FROM users WHERE Id = ?", userId)
+		for rows.Next() {
+			if err := rows.Scan(&user.Email, &user.Name); err != nil {
+				response.Status = 400
+				response.Message = "Internal Error"
+				SendResponse(w, response.Status, response)
+			} else {
+				users = append(users, user)
+			}
+
+		}
+		fmt.Print(users[0].Email)
+		go gomail.SendUnblockMail(users[0].Email, users[0].Name)
 
 	} else {
 		response.Status = 400
-		response.Message = "Error Unblock User"
+		response.Message = "Error unblock User"
 	}
 	SendResponse(w, response.Status, response)
 }
