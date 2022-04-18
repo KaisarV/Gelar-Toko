@@ -16,7 +16,7 @@ func GetAllProduct(w http.ResponseWriter, r *http.Request) {
 	var response model.ProductsResponse
 	defer db.Close()
 
-	query := "SELECT Id, Name, Category, Current_Price FROM products WHERE Is_Blocked = 0"
+	query := "SELECT product.ID , product.Name, product.Category ,product.Current_Price, product.Stock FROM products product Join stores store ON store.Id = product.Store_Id JOIN users user ON user.Id = store.User_Id WHERE user.Is_Verified != -1"
 
 	name := r.URL.Query()["name"]
 	if name != nil {
@@ -36,7 +36,7 @@ func GetAllProduct(w http.ResponseWriter, r *http.Request) {
 	var products []model.Product
 
 	for rows.Next() {
-		if err := rows.Scan(&product.ID, &product.Name, &product.Category, &product.CurrentPrice); err != nil {
+		if err := rows.Scan(&product.ID, &product.Name, &product.Category, &product.CurrentPrice, &product.Stock); err != nil {
 		} else {
 			products = append(products, product)
 		}
@@ -295,6 +295,38 @@ func BlockProduct(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func UnblockProduct(w http.ResponseWriter, r *http.Request) {
+	db := config.Connect()
+	defer db.Close()
+
+	var product model.Product
+	var response model.ProductResponse
+
+	err := r.ParseForm()
+
+	if err != nil {
+		response.Status = 400
+		response.Message = "Error Parsing Data"
+		SendResponse(w, response.Status, response)
+	}
+
+	vars := mux.Vars(r)
+	product.ID, _ = strconv.Atoi(vars["id"])
+	//mencari barang yg akan di blokir
+	_, errQuery := db.Exec(`UPDATE products SET isBlocked = 0 , WHERE id = ?`, product.ID)
+
+	if errQuery != nil {
+		response.Status = 400
+		response.Message = "UnBlocking product Fail"
+		SendResponse(w, response.Status, response)
+	} else {
+		response.Status = 200
+		response.Message = "Success unblocking product"
+		response.Data = product
+		SendResponse(w, response.Status, response)
+	}
+}
+
 func SetDiscount() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// db := config.Connect()
@@ -317,4 +349,46 @@ func SetDiscount() http.HandlerFunc {
 		fmt.Println("aa")
 	}
 
+}
+
+func GetBlockedStoreProduct(w http.ResponseWriter, r *http.Request) {
+	db := config.Connect()
+	var response model.ProductsResponse
+	defer db.Close()
+
+	query := "SELECT product.ID , product.Name, product.Category ,product.Current_Price, product.Stock FROM products product Join stores store ON store.Id = product.Store_Id JOIN users user ON user.Id = store.User_Id WHERE user.Is_Verified = -1"
+
+	name := r.URL.Query()["name"]
+	if name != nil {
+		query += " AND Name LIKE % " + name[0] + "%"
+	}
+
+	rows, err := db.Query(query)
+
+	if err != nil {
+		response.Status = 400
+		response.Message = err.Error()
+		SendResponse(w, response.Status, response)
+		return
+	}
+
+	var product model.Product
+	var products []model.Product
+
+	for rows.Next() {
+		if err := rows.Scan(&product.ID, &product.Name, &product.Category, &product.CurrentPrice, &product.Stock); err != nil {
+		} else {
+			products = append(products, product)
+		}
+	}
+
+	if len(products) != 0 {
+		response.Status = 200
+		response.Message = "Success Get Data"
+		response.Data = products
+	} else {
+		response.Status = 400
+		response.Message = "Data Not Found"
+	}
+	SendResponse(w, response.Status, response)
 }
