@@ -54,6 +54,7 @@ func main() {
 	//transactions
 	router.HandleFunc("/transactions", controller.Authenticate(controller.GetTransaction, 1)).Methods("GET")
 	router.HandleFunc("/transaction", controller.Authenticate(controller.InsertNewTransactions, 1)).Methods("POST")
+	router.HandleFunc("/transaction", controller.Authenticate(controller.UpdateTransactions, 2)).Methods("PUT")
 
 	//products
 	router.HandleFunc("/products", controller.GetAllProduct).Methods("GET")

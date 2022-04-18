@@ -133,3 +133,41 @@ func GetTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func UpdateTransactions(w http.ResponseWriter, r *http.Request) {
+	db := config.Connect()
+	defer db.Close()
+
+	var response model.TransactionsResponse
+	// var transaction model.Transaction
+	var transactions []model.Transaction
+
+	_, userId, _, _ := validateTokenFromCookies(r)
+	fmt.Print(userId)
+	err := r.ParseForm()
+	if err != nil {
+		response.Status = 400
+		response.Message = "Error Parsing Data"
+		SendResponse(w, response.Status, response)
+	}
+
+	transactionsID := r.Form.Get("transID")
+	Status := r.Form.Get("status")
+	//0 -> packed
+	//1 -> sent
+	//2 -> arrived
+	// Status, _ := strconv.Atoi(r.Form.Get("status"))
+
+	_, errQuery := db.Exec("UPDATE transactions set Status ='" + Status + "' WHERE Id = " + transactionsID)
+
+	if errQuery == nil {
+		response.Status = 200
+		response.Message = "Succes Get Data"
+		response.Data = transactions
+		SendResponse(w, response.Status, response)
+	} else {
+		response.Status = 400
+		response.Message = "Data Not Found"
+		SendResponse(w, response.Status, response)
+	}
+}
