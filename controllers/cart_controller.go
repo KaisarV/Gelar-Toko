@@ -31,7 +31,7 @@ func GetCartItem(w http.ResponseWriter, r *http.Request) {
 	// convertedString := strconv.Itoa(userId)
 
 	// query := "SELECT * FROM  transactions  WHERE User_Id  = " + convertedString
-	rows, err := db.Query("SELECT * FROM  carts  WHERE id_user =? ", userId)
+	rows, err := db.Query(`SELECT * FROM  carts  WHERE User_Id = ? `, userId)
 
 	if err != nil {
 		response.Status = 400
@@ -77,10 +77,11 @@ func InsertCartItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// cart.UserId, _ = strconv.Atoi(r.Form.Get("UserID"))
 	cart.ProductId, _ = strconv.Atoi(r.Form.Get("ProductID"))
 	cart.Quantity, _ = strconv.Atoi(r.Form.Get("Quantity"))
 
-	res, errQuery := db.Exec("INSERT INTO carts (id_user, id_barang, Quantity) VALUES (?, ?, ?)",
+	res, errQuery := db.Exec(`INSERT INTO carts (User_Id, Product_Id, Quantity) VALUES (?, ?, ?)`,
 		cart.UserId,
 		cart.ProductId,
 		cart.Quantity,
@@ -120,10 +121,11 @@ func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	_, cart.UserId, _, _ = validateTokenFromCookies(r) // 2 param buat delet
-	productId := vars["prodId"]                        //userid -> kerangjang siapa productid -> barang yang mana
-	query, errQuery := db.Exec(`DELETE FROM carts WHERE id_user = ? And id_barang = ?`,
+	fmt.Print(cart.UserId)
+	cartId := vars["cartId"] //userid -> kerangjang siapa cartid -> cart yang mana
+	query, errQuery := db.Exec(`DELETE FROM carts WHERE User_Id = ? And Id = ?`,
 		cart.UserId,
-		productId,
+		cartId,
 	)
 	RowsAffected, _ := query.RowsAffected()
 
@@ -153,6 +155,7 @@ func UpdateCartItem(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	var response model.CartsResponse
 	var carts []model.Cart
+	var cart model.Cart
 
 	if err != nil {
 		response.Status = 400
@@ -162,15 +165,17 @@ func UpdateCartItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	UserId, _ := strconv.Atoi(r.Form.Get("userId"))
-	ProductId, _ := strconv.Atoi(r.Form.Get("ProdId"))
-	Quantity, _ := strconv.Atoi(r.Form.Get("qty"))
+	_, cart.UserId, _, _ = validateTokenFromCookies(r)
+	cart.ID, _ = strconv.Atoi(r.Form.Get("Id"))
+	// cart.ProductId, _ = strconv.Atoi(r.Form.Get("ProdId"))
+	cart.Quantity, _ = strconv.Atoi(r.Form.Get("qty"))
 
 	_, errQuery := db.Exec(
-		`UPDATE carts SET Quantity = ? WHERE User_Id = ? AND Product_Id = ?`,
-		Quantity,
-		UserId,
-		ProductId,
+		`UPDATE carts SET Quantity = ? WHERE User_Id = ? AND Id = ?`, //AND Product_Id = ?
+		cart.Quantity,
+		cart.UserId,
+		/*cart.ProductId,*/
+		cart.ID,
 	)
 
 	if errQuery == nil {
