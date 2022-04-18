@@ -296,16 +296,44 @@ func BlockUser(w http.ResponseWriter, r *http.Request) {
 	userId := vars["id"]
 
 	var response model.ErrorResponse
+	var user model.User
 
 	_, errQuery := db.Exec(`UPDATE users SET Is_Verified = ? WHERE id = ?`, -1, userId)
 
 	if errQuery == nil {
+		generateToken(w, user.ID, user.Name, user.UserType)
 		response.Status = 200
 		response.Message = "Success Block User"
+		go gomail.SendBlockMail(user.Email, user.Name)
 
 	} else {
 		response.Status = 400
 		response.Message = "Error Block User"
+	}
+	SendResponse(w, response.Status, response)
+}
+
+func UnblockUser(w http.ResponseWriter, r *http.Request) {
+	db := config.Connect()
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	userId := vars["id"]
+
+	var response model.ErrorResponse
+	var user model.User
+
+	_, errQuery := db.Exec(`UPDATE users SET Is_Verified = ? WHERE id = ?`, 1, userId)
+
+	if errQuery == nil {
+		generateToken(w, user.ID, user.Name, user.UserType)
+		response.Status = 200
+		response.Message = "Success Unblock User"
+		go gomail.SendUnblockMail(user.Email, user.Name)
+
+	} else {
+		response.Status = 400
+		response.Message = "Error Unblock User"
 	}
 	SendResponse(w, response.Status, response)
 }
