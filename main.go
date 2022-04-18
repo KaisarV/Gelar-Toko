@@ -98,6 +98,24 @@ func main() {
 		fmt.Println(response)
 	})
 
+	s.Every(1).Months(1).Do(func() {
+		db := config.Connect()
+		defer db.Close()
+
+		var response model.ErrorResponse
+		_, err := db.Exec("UPDATE products SET Current_Price = Normal_Price")
+
+		if err != nil {
+			response.Status = 400
+			response.Message = err.Error()
+
+		} else {
+			response.Status = 200
+			response.Message = "Success update price"
+		}
+		fmt.Println(response)
+	})
+
 	s.StartAsync()
 	handler := corsHandler.Handler(router)
 	log.Println("Starting on Port")
