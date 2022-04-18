@@ -37,7 +37,7 @@ func main() {
 	//User
 	router.HandleFunc("/users", controller.GetAllUsers).Methods("GET")
 	router.HandleFunc("/users/{id}", controller.Authenticate(controller.DeleteUser, 3)).Methods("DELETE")
-	router.HandleFunc("/users", controller.Authenticate(controller.UpdateMyProfile, 1)).Methods("PUT")
+	router.HandleFunc("/users", controller.Authenticate(controller.UpdateMyProfile, 2)).Methods("PUT")
 	router.HandleFunc("/user/block/{id}", controller.Authenticate(controller.BlockUser, 3)).Methods("PUT")
 	router.HandleFunc("/user/unblock/{id}", controller.Authenticate(controller.UnblockUser, 3)).Methods("PUT")
 
@@ -58,8 +58,8 @@ func main() {
 
 	//products
 	router.HandleFunc("/products", controller.GetAllProduct).Methods("GET")
-	router.HandleFunc("/products", controller.Authenticate(controller.InsertNewProduct, 1)).Methods("POST")
-	router.HandleFunc("/products/update/{id}", controller.Authenticate(controller.UpdateProduct, 1)).Methods("PUT")
+	router.HandleFunc("/products", controller.Authenticate(controller.InsertNewProduct, 2)).Methods("POST")
+	router.HandleFunc("/products/update/{id}", controller.Authenticate(controller.UpdateProduct, 2)).Methods("PUT")
 	router.HandleFunc("/products/delete/{id}", controller.Authenticate(controller.DeleteProduct, 2)).Methods("DELETE")
 	router.HandleFunc("/products/block/{id}", controller.Authenticate(controller.BlockProduct, 3)).Methods("PUT")
 	router.HandleFunc("/products/unblock/{id}", controller.Authenticate(controller.UnblockProduct, 3)).Methods("PUT")
@@ -68,8 +68,8 @@ func main() {
 	//cart
 	router.HandleFunc("/cart", controller.Authenticate(controller.InsertCartItem, 1)).Methods("POST")
 	router.HandleFunc("/cart", controller.Authenticate(controller.GetCartItem, 1)).Methods("GET")
-	router.HandleFunc("/cart/{cartId}", controller.Authenticate(controller.DeleteCartItem, 2)).Methods("DELETE")
-	router.HandleFunc("/cart", controller.Authenticate(controller.UpdateCartItem, 2)).Methods("PUT")
+	router.HandleFunc("/cart/{cartId}", controller.Authenticate(controller.DeleteCartItem, 1)).Methods("DELETE")
+	router.HandleFunc("/cart", controller.Authenticate(controller.UpdateCartItem, 1)).Methods("PUT")
 
 	//feedback
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.GetFeedback, 1)).Methods("GET")
