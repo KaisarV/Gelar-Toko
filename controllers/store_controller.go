@@ -3,6 +3,7 @@ package controllers
 import (
 	config "GelarToko/config"
 	model "GelarToko/models"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -58,10 +59,10 @@ func DeleteMyStore(w http.ResponseWriter, r *http.Request) {
 
 	var response model.ErrorResponse
 	_, userId, userName, _ := validateTokenFromCookies(r)
-
+	fmt.Println("Disini1")
 	query, errQuery := db.Exec(`DELETE FROM stores WHERE User_Id = ?;`, userId)
 	RowsAffected, _ := query.RowsAffected()
-
+	fmt.Println("Disini2")
 	if RowsAffected == 0 {
 
 		response.Status = 400
@@ -69,7 +70,7 @@ func DeleteMyStore(w http.ResponseWriter, r *http.Request) {
 		SendResponse(w, response.Status, response)
 		return
 	}
-
+	fmt.Println("Disini3")
 	if errQuery == nil {
 		query, _ = db.Exec("UPDATE users SET User_Type = ? WHERE Id = ?", 1, userId)
 		response.Status = 200
