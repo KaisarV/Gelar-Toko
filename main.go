@@ -2,13 +2,9 @@ package main
 
 import (
 	controller "GelarToko/controllers"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
-
-	config "GelarToko/config"
-	model "GelarToko/models"
 
 	"github.com/go-co-op/gocron"
 	"github.com/gorilla/mux"
@@ -90,41 +86,9 @@ func main() {
 
 	s := gocron.NewScheduler(time.UTC)
 
-	s.Every(1).MonthLastDay().Do(func() {
-		db := config.Connect()
-		defer db.Close()
+	s.Every(1).MonthLastDay().Do(controller.SetDiscount)
 
-		var response model.ErrorResponse
-		_, err := db.Exec("UPDATE products SET Current_Price = Normal_Price * 0.8")
-
-		if err != nil {
-			response.Status = 400
-			response.Message = err.Error()
-
-		} else {
-			response.Status = 200
-			response.Message = "Success update price"
-		}
-		fmt.Println(response)
-	})
-
-	s.Every(1).Months(1).Do(func() {
-		db := config.Connect()
-		defer db.Close()
-
-		var response model.ErrorResponse
-		_, err := db.Exec("UPDATE products SET Current_Price = Normal_Price")
-
-		if err != nil {
-			response.Status = 400
-			response.Message = err.Error()
-
-		} else {
-			response.Status = 200
-			response.Message = "Success update price"
-		}
-		fmt.Println(response)
-	})
+	s.Every(1).Months(1).Do(controller.SetNormalPrice)
 
 	s.StartAsync()
 	handler := corsHandler.Handler(router)

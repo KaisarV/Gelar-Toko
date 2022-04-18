@@ -327,30 +327,6 @@ func UnblockProduct(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func SetDiscount() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// db := config.Connect()
-		// defer db.Close()
-
-		// var response model.ErrorResponse
-		// _, err := db.Exec("UPDATE products SET Current_Price = Normal_Price WHERE products.Id = products.Id")
-
-		// fmr.Println*
-
-		// if err != nil {
-		// 	response.Status = 400
-		// 	response.Message = "Blocking product Fail"
-		// 	SendResponse(w, response.Status, response)
-		// } else {
-		// 	response.Status = 200
-		// 	response.Message = "Success blocking product"
-		// 	SendResponse(w, response.Status, response)
-		// }
-		fmt.Println("aa")
-	}
-
-}
-
 func GetBlockedStoreProduct(w http.ResponseWriter, r *http.Request) {
 	db := config.Connect()
 	var response model.ProductsResponse
@@ -391,4 +367,40 @@ func GetBlockedStoreProduct(w http.ResponseWriter, r *http.Request) {
 		response.Message = "Data Not Found"
 	}
 	SendResponse(w, response.Status, response)
+}
+
+func SetDiscount() {
+	db := config.Connect()
+	defer db.Close()
+
+	var response model.ErrorResponse
+	_, err := db.Exec("UPDATE products SET Current_Price = Normal_Price * 0.8")
+
+	if err != nil {
+		response.Status = 400
+		response.Message = err.Error()
+
+	} else {
+		response.Status = 200
+		response.Message = "Success update price"
+	}
+	fmt.Println(response)
+}
+
+func SetNormalPrice() {
+	db := config.Connect()
+	defer db.Close()
+
+	var response model.ErrorResponse
+	_, err := db.Exec("UPDATE products SET Current_Price = Normal_Price")
+
+	if err != nil {
+		response.Status = 400
+		response.Message = err.Error()
+
+	} else {
+		response.Status = 200
+		response.Message = "Success update price"
+	}
+	fmt.Println(response)
 }
