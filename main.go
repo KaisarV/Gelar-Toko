@@ -78,11 +78,6 @@ func main() {
 		AllowCredentials: true,
 	})
 
-	// gocron.Start()
-	// gocron.Every(1).Seconds().Do(func() {
-	// 	fmt.Println("aaa")
-	// })
-
 	s := gocron.NewScheduler(time.UTC)
 
 	s.Every(1).MonthLastDay().Do(func() {
@@ -90,7 +85,7 @@ func main() {
 		defer db.Close()
 
 		var response model.ErrorResponse
-		_, err := db.Exec("UPDATE products SET Current_Price = Normal_Price")
+		_, err := db.Exec("UPDATE products SET Current_Price = Normal_Price * 0.8")
 
 		if err != nil {
 			response.Status = 400
@@ -98,7 +93,7 @@ func main() {
 
 		} else {
 			response.Status = 200
-			response.Message = "Success blocking product"
+			response.Message = "Success update price"
 		}
 		fmt.Println(response)
 	})

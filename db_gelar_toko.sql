@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 17, 2022 at 01:23 PM
+-- Generation Time: Apr 18, 2022 at 11:55 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.2
 
@@ -64,7 +64,8 @@ CREATE TABLE `chat` (
 --
 
 INSERT INTO `chat` (`Id`, `Sender_Id`, `Receiver_Id`, `Customer_Id`, `Chat`, `Date`) VALUES
-(1, 9, 1, 9, 'tes', '2022-04-15 12:55:47');
+(1, 9, 1, 9, 'tes', '2022-04-15 12:55:47'),
+(2, 9, 1, 9, 'tes', '2022-04-18 07:49:12');
 
 -- --------------------------------------------------------
 
@@ -99,33 +100,29 @@ CREATE TABLE `products` (
   `Id` int(11) NOT NULL,
   `Name` varchar(255) DEFAULT NULL,
   `Category` varchar(255) DEFAULT NULL,
-  `Price` int(11) DEFAULT NULL,
+  `Current_Price` int(11) DEFAULT NULL,
   `Store_Id` int(11) DEFAULT NULL,
   `Stock` int(11) NOT NULL,
-  `Is_Blocked` int(11) DEFAULT 0
+  `Is_Blocked` int(11) DEFAULT 0,
+  `Normal_Price` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`Id`, `Name`, `Category`, `Price`, `Store_Id`, `Stock`, `Is_Blocked`) VALUES
-(1, 'Nike Hyper Venom', 'Olahraga', 1200000, 1, 10, 0),
-(2, 'Mouse G-402', 'Komputer dan Elektronik', 350000, 2, 20, 0),
-(3, 'Knitted Sweater', 'Pakaian', 70000, 3, 1, 0),
-(4, 'Celana Legging', 'Pakaian', 100000, 3, 4, 0),
-(5, 'Helm Bogo', 'Hobi', 580000, 4, 6, 0),
-(6, 'Keyboard K-580', 'Komputer dan Elektronik', 375000, 2, 7, 0),
-(7, 'Masker KN-85', 'Kesehatan', 150000, 5, 100, 0),
-(8, 'Hand Sanitizer Carex', 'Kesehatan', 25000, 5, 3, 0),
-(9, 'Nike Air Jordan 1 Retro', 'Olahraga', 2600000, 1, 6, 0),
-(10, 'Helm KYT', 'Hobi', 700000, 4, 9, 0),
-(11, 'Masker N95', 'Kesehatan', 60000, 5, 2, 0),
-(14, 'Jam Tangan', 'Aksesoris', 500000, 11, 6, 0),
-(15, 'Topi', 'Aksesoris', 500000, 11, 8, 0),
-(16, 'Topi', 'Aksesoris', 500000, 11, 7, 0),
-(17, 'Headphone', 'Gaming', 100000, 11, 200, 0),
-(18, 'Topi', 'Aksesoris', 500000, 11, 50, 0);
+INSERT INTO `products` (`Id`, `Name`, `Category`, `Current_Price`, `Store_Id`, `Stock`, `Is_Blocked`, `Normal_Price`) VALUES
+(1, 'Nike Hyper Venom', 'Olahraga', 960000, 1, 0, 0, 1200000),
+(2, 'Mouse G-402', 'Komputer dan Elektronik', 280000, 2, 20, 0, 350000),
+(3, 'Knitted Sweater', 'Pakaian', 56000, 3, 1, 0, 70000),
+(4, 'Celana Legging', 'Pakaian', 80000, 3, 4, 0, 100000),
+(5, 'Helm Bogo', 'Hobi', 464000, 4, 6, 0, 580000),
+(6, 'Keyboard K-580', 'Komputer dan Elektronik', 300000, 2, 7, 0, 375000),
+(7, 'Masker KN-85', 'Kesehatan', 120000, 5, 100, 0, 150000),
+(8, 'Hand Sanitizer Carex', 'Kesehatan', 20000, 5, 3, 0, 25000),
+(9, 'Nike Air Jordan 1 Retro', 'Olahraga', 2080000, 1, 6, 0, 2600000),
+(10, 'Helm KYT', 'Hobi', 560000, 4, 9, 0, 700000),
+(11, 'Masker N95', 'Kesehatan', 2400, 5, 2, 0, 3000);
 
 -- --------------------------------------------------------
 
@@ -172,7 +169,7 @@ INSERT INTO `stores` (`Id`, `User_Id`, `Name`, `Address`) VALUES
 (3, 3, 'Rily Store', 'Bekasi Timur'),
 (4, 4, 'Istana Helm', 'Kota Batu'),
 (5, 5, 'Juragan Masker', 'Blitar'),
-(11, 9, 'Continue Gaming', 'J');
+(12, 9, 'Computer Shop', 'Jakarta Barat');
 
 -- --------------------------------------------------------
 
@@ -185,6 +182,7 @@ CREATE TABLE `transactions` (
   `User_Id` int(11) DEFAULT NULL,
   `Product_Id` int(11) DEFAULT NULL,
   `Date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `Price` int(11) NOT NULL,
   `Quantity` int(11) NOT NULL,
   `Status` enum('PACKED','SENT','ARRIVED') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -193,10 +191,12 @@ CREATE TABLE `transactions` (
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`Id`, `User_Id`, `Product_Id`, `Date`, `Quantity`, `Status`) VALUES
-(1, 9, 1, '2022-03-31 14:08:49', 2, 'PACKED'),
-(2, 15, 1, '2022-04-01 15:49:32', 2, 'PACKED'),
-(3, 9, 1, '2022-04-01 15:57:16', 1, 'PACKED');
+INSERT INTO `transactions` (`Id`, `User_Id`, `Product_Id`, `Date`, `Price`, `Quantity`, `Status`) VALUES
+(1, 9, 1, '2022-03-31 14:08:49', 0, 2, 'PACKED'),
+(2, 15, 1, '2022-04-01 15:49:32', 0, 2, 'PACKED'),
+(3, 9, 1, '2022-04-01 15:57:16', 0, 1, 'PACKED'),
+(4, 9, 1, '2022-04-17 11:56:26', 0, 5, 'PACKED'),
+(5, 9, 1, '2022-04-18 07:38:53', 0, 5, 'PACKED');
 
 -- --------------------------------------------------------
 
@@ -227,7 +227,7 @@ INSERT INTO `users` (`Id`, `Name`, `Phone`, `Email`, `Password`, `Address`, `Use
 (5, 'Hadi Wijaya', '087324964329', 'wijayahadi@gmail.com', '', 'Blitar', 2, 1),
 (6, 'Agung Tirtayasa', '087329464329', 'atirta@gmail.com', '', 'Bandung', 1, 1),
 (7, 'Adi Kusuma', '08124365834', 'adikusuma@gmail.com', '', 'Jakarta Selatan', 1, 1),
-(9, 'mikael', '081243268345', 'jajang@gmail.com', 'dadang123', 'Jakarta Utara', 2, 1),
+(9, 'mikael jajangg', '0812432683455', 'jajang@gmail.com', 'dadang123', 'Jakarta Utara', 2, 1),
 (15, 'mikael jajang', '081243268345', 'dadang@gmail.com', 'jajang123', 'Jakarta Utara', 3, 1),
 (17, 'admin', 'admin', 'admin@gmail.com', 'admin123', 'Bogor', 3, 1),
 (19, 'kaisar', 'string', 'kaisar.valentino123@gmail.com', 'string', 'string', 1, -1),
@@ -311,7 +311,7 @@ ALTER TABLE `carts`
 -- AUTO_INCREMENT for table `chat`
 --
 ALTER TABLE `chat`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `feedbacks`
@@ -323,7 +323,7 @@ ALTER TABLE `feedbacks`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `product_reviews`
@@ -335,13 +335,13 @@ ALTER TABLE `product_reviews`
 -- AUTO_INCREMENT for table `stores`
 --
 ALTER TABLE `stores`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
