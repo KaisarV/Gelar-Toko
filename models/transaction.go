@@ -5,6 +5,7 @@ type Transaction struct {
 	UserId    int    `json:"userId"`
 	ProductId int    `json:"productId"`
 	Date      string `json:"date"`
+	Price     string `json:"price"`
 	Quantity  int    `json:"qty"`
 	Status    string `json:"status"`
 }

@@ -2,9 +2,15 @@ package main
 
 import (
 	controller "GelarToko/controllers"
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	config "GelarToko/config"
+	model "GelarToko/models"
+
+	"github.com/go-co-op/gocron"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
@@ -54,6 +60,7 @@ func main() {
 	router.HandleFunc("/products/update/{id}", controller.Authenticate(controller.UpdateProduct, 1)).Methods("PUT")
 	router.HandleFunc("/products/delete/{id}", controller.Authenticate(controller.DeleteProduct, 2)).Methods("DELETE")
 	router.HandleFunc("/products/block/{id}", controller.Authenticate(controller.BlockProduct, 3)).Methods("PUT")
+
 	//feedback
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.GetFeedback, 1)).Methods("GET")
 	router.HandleFunc("/feedbacks", controller.Authenticate(controller.InsertNewFeedback, 1)).Methods("POST")
@@ -70,6 +77,33 @@ func main() {
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowCredentials: true,
 	})
+
+	// gocron.Start()
+	// gocron.Every(1).Seconds().Do(func() {
+	// 	fmt.Println("aaa")
+	// })
+
+	s := gocron.NewScheduler(time.UTC)
+
+	s.Every(1).MonthLastDay().Do(func() {
+		db := config.Connect()
+		defer db.Close()
+
+		var response model.ErrorResponse
+		_, err := db.Exec("UPDATE products SET Current_Price = Normal_Price")
+
+		if err != nil {
+			response.Status = 400
+			response.Message = err.Error()
+
+		} else {
+			response.Status = 200
+			response.Message = "Success blocking product"
+		}
+		fmt.Println(response)
+	})
+
+	s.StartAsync()
 	handler := corsHandler.Handler(router)
 	log.Println("Starting on Port")
 

@@ -16,7 +16,7 @@ func GetAllProduct(w http.ResponseWriter, r *http.Request) {
 	var response model.ProductsResponse
 	defer db.Close()
 
-	query := "SELECT Id, Name, Category, Price FROM products"
+	query := "SELECT Id, Name, Category, Current_Price FROM products"
 	name := r.URL.Query()["name"]
 	if name != nil {
 		query += " WHERE Name LIKE % " + name[0] + "%"
@@ -35,8 +35,7 @@ func GetAllProduct(w http.ResponseWriter, r *http.Request) {
 	var products []model.Product
 
 	for rows.Next() {
-		if err := rows.Scan(&product.ID, &product.Name, &product.Category, &product.Price); err != nil {
-
+		if err := rows.Scan(&product.ID, &product.Name, &product.Category, &product.CurrentPrice); err != nil {
 		} else {
 			products = append(products, product)
 		}
@@ -87,11 +86,10 @@ func InsertNewProduct(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	product.Name = r.Form.Get("name")
+	product.Name = r.Form.Get("Name")
 	product.Category = r.Form.Get("Category")
-	product.Price, _ = strconv.Atoi(r.Form.Get("Price"))
-
-	fmt.Println(stores[0].ID)
+	product.CurrentPrice, _ = strconv.Atoi(r.Form.Get("Price"))
+	product.NormalPrice = product.CurrentPrice
 
 	if product.Name == "" {
 		response.Status = 400
@@ -107,14 +105,14 @@ func InsertNewProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if product.Price == 0 {
+	if product.CurrentPrice == 0 {
 		response.Status = 400
 		response.Message = "Please Insert Price "
 		SendResponse(w, response.Status, response)
 		return
 	}
 
-	_, errQuery := db.Exec("INSERT INTO products (Name, Category, Price , Store_Id) VALUES (?,?,?,?)", product.Name, product.Category, product.Price, stores[0].ID)
+	_, errQuery := db.Exec("INSERT INTO products (Name, Category, Current_Price , Store_Id, Normal_Price) VALUES (?,?,?,?,?)", product.Name, product.Category, product.CurrentPrice, stores[0].ID, product.NormalPrice)
 	// fmt.Print(errQuery.Error())
 	if errQuery != nil {
 		response.Status = 400
@@ -167,7 +165,7 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	product.ID, _ = strconv.Atoi(vars["id"])
 	product.Name = r.Form.Get("name")
 	product.Category = r.Form.Get("Category")
-	product.Price, _ = strconv.Atoi(r.Form.Get("Price"))
+	product.NormalPrice, _ = strconv.Atoi(r.Form.Get("Price"))
 
 	fmt.Println(stores[0].ID)
 
@@ -185,14 +183,14 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if product.Price == 0 {
+	if product.NormalPrice == 0 {
 		response.Status = 400
 		response.Message = "Please Insert Price "
 		SendResponse(w, response.Status, response)
 		return
 	}
 
-	_, errQuery := db.Exec(`UPDATE products SET Name = ?,  Category = ?, Price = ?, Store_Id = ? WHERE id = ?`, product.Name, product.Category, product.Price, stores[0].ID, product.ID)
+	_, errQuery := db.Exec(`UPDATE products SET Name = ?,  Category = ?, Normal_Price = ?, Store_Id = ? WHERE id = ?`, product.Name, product.Category, product.NormalPrice, stores[0].ID, product.ID)
 	// fmt.Print(errQuery.Error())
 	if errQuery != nil {
 		response.Status = 400
@@ -293,4 +291,28 @@ func BlockProduct(w http.ResponseWriter, r *http.Request) {
 		response.Data = product
 		SendResponse(w, response.Status, response)
 	}
+}
+
+func SetDiscount() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// db := config.Connect()
+		// defer db.Close()
+
+		// var response model.ErrorResponse
+		// _, err := db.Exec("UPDATE products SET Current_Price = Normal_Price WHERE products.Id = products.Id")
+
+		// fmr.Println*
+
+		// if err != nil {
+		// 	response.Status = 400
+		// 	response.Message = "Blocking product Fail"
+		// 	SendResponse(w, response.Status, response)
+		// } else {
+		// 	response.Status = 200
+		// 	response.Message = "Success blocking product"
+		// 	SendResponse(w, response.Status, response)
+		// }
+		fmt.Println("aa")
+	}
+
 }

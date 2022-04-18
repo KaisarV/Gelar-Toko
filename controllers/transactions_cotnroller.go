@@ -115,7 +115,7 @@ func GetTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for rows.Next() {
-		if err := rows.Scan(&transaction.ID, &transaction.UserId, &transaction.ProductId, &transaction.Date, &transaction.Quantity, &transaction.Status); err != nil {
+		if err := rows.Scan(&transaction.ID, &transaction.UserId, &transaction.ProductId, &transaction.Date, &transaction.Price, &transaction.Quantity, &transaction.Status); err != nil {
 		} else {
 			transactions = append(transactions, transaction)
 		}
