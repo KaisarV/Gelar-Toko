@@ -3,7 +3,6 @@ package controllers
 import (
 	config "GelarToko/config"
 	model "GelarToko/models"
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -58,10 +57,10 @@ func DeleteMyStore(w http.ResponseWriter, r *http.Request) {
 
 	var response model.ErrorResponse
 	_, userId, userName, _ := validateTokenFromCookies(r)
-	fmt.Println("Disini1")
+
 	query, errQuery := db.Exec(`DELETE FROM stores WHERE User_Id = ?;`, userId)
 	RowsAffected, _ := query.RowsAffected()
-	fmt.Println("Disini2")
+
 	if RowsAffected == 0 {
 
 		response.Status = 400
@@ -69,7 +68,7 @@ func DeleteMyStore(w http.ResponseWriter, r *http.Request) {
 		SendResponse(w, response.Status, response)
 		return
 	}
-	fmt.Println("Disini3")
+
 	if errQuery == nil {
 		query, _ = db.Exec("UPDATE users SET User_Type = ? WHERE Id = ?", 1, userId)
 		response.Status = 200
@@ -100,6 +99,12 @@ func InsertMyStore(w http.ResponseWriter, r *http.Request) {
 		SendResponse(w, response.Status, response)
 		return
 	}
+	if userType == 3 {
+		response.Status = 400
+		response.Message = "You are admin"
+		SendResponse(w, response.Status, response)
+		return
+	}
 
 	err := r.ParseForm()
 
@@ -113,9 +118,6 @@ func InsertMyStore(w http.ResponseWriter, r *http.Request) {
 
 	store.Name = r.Form.Get("name")
 	store.Address = r.Form.Get("address")
-
-	// store.Name = input.Name
-	// store.Address = input.Address
 
 	if store.Name == "" {
 		response.Status = 400

@@ -73,7 +73,6 @@ func InsertNewProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(store.UserId)
 	//check store id by userID
 	rows, _ := db.Query("SELECT Id FROM stores WHERE User_Id = ?", store.UserId)
 	for rows.Next() {
@@ -114,7 +113,7 @@ func InsertNewProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, errQuery := db.Exec("INSERT INTO products (Name, Category, Current_Price , Store_Id, Normal_Price) VALUES (?,?,?,?,?)", product.Name, product.Category, product.CurrentPrice, stores[0].ID, product.NormalPrice)
-	// fmt.Print(errQuery.Error())
+
 	if errQuery != nil {
 		response.Status = 400
 		response.Message = "Error Insert Data"
@@ -148,8 +147,6 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(store.UserId)
-	//check store id by userID
 	rows, _ := db.Query("SELECT Id FROM stores WHERE User_Id = ?", store.UserId)
 	for rows.Next() {
 		if err := rows.Scan(&store.ID); err != nil {
@@ -167,8 +164,6 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	product.Name = r.Form.Get("name")
 	product.Category = r.Form.Get("Category")
 	product.NormalPrice, _ = strconv.Atoi(r.Form.Get("Price"))
-
-	fmt.Println(stores[0].ID)
 
 	if product.Name == "" {
 		response.Status = 400
@@ -192,7 +187,7 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, errQuery := db.Exec(`UPDATE products SET Name = ?,  Category = ?, Normal_Price = ?, Store_Id = ? WHERE id = ?`, product.Name, product.Category, product.NormalPrice, stores[0].ID, product.ID)
-	// fmt.Print(errQuery.Error())
+
 	if errQuery != nil {
 		response.Status = 400
 		response.Message = "Error Insert Data"
