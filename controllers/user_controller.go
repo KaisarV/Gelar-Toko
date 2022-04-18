@@ -7,7 +7,6 @@ import (
 
 	config "GelarToko/config"
 	gomail "GelarToko/gomail"
-	goroutine "GelarToko/goroutine"
 	model "GelarToko/models"
 
 	"github.com/gorilla/mux"
@@ -19,10 +18,10 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	var response model.UsersResponse
 	defer db.Close()
 
-	query := "SELECT Id, Name, Phone, Email,  Address, User_Type FROM users"
+	query := "SELECT Id, Name, Phone, Email,  Address, User_Type FROM users WHERE is_Verified != -1"
 	id := r.URL.Query()["id"]
 	if id != nil {
-		query += " WHERE id = " + id[0]
+		query += " AND id = " + id[0]
 	}
 
 	rows, err := db.Query(query)
@@ -384,13 +383,15 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := db.Query("SELECT * FROM users WHERE email=? AND password=?",
+	rows, err := db.Query("SELECT * FROM users WHERE email=? AND password=? AND Is_Verified != -1",
 		email,
 		password,
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		response.Status = 400
+		response.Message = "Data Found"
+		SendResponse(w, response.Status, response)
 	}
 
 	var user model.User
@@ -409,7 +410,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 
 		response.Status = 200
 		response.Message = "Login Success"
-		go goroutine.SendLoginMail(user.Email, user.Name)
+		go gomail.SendLoginMail(user.Email, user.Name)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
 	} else {
