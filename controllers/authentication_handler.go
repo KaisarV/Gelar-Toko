@@ -11,7 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var jwtKey = []byte("Jksdgbfkd334dsj")
+varr jwtKey = []byte("Jksdgbfkd334dsj")
 var tokenName = "token"
 
 func generateToken(w http.ResponseWriter, id int, name string, userType int) {
